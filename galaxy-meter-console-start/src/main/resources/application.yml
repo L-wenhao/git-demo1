@@ -1,0 +1,42 @@
+server:
+  port: 8086
+#  加上前缀，方便前端做映射处理
+  servlet:
+    context-path: /galaxymeter
+
+spring:
+  profiles:
+    active: dev
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  aop:
+    proxy-target-class: true
+
+  #文件大小 MB必须大写
+  #maxFileSize是单个文件大小
+  #maxRequestSize是设置总上传的数据大小
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 500MB
+      max-request-size: 1024MB
+mybatis:
+  # mybatis配置实体类的路径
+  type-aliases-package: com.csii.meter.console.domain
+  # mybatis配置mapper.xml路径
+  mapper-locations: classpath*:/mappers/*.xml
+  # mybatis全局配置的路径
+  config-location: classpath:/mybatis-config/mybatis-config.xml
+pagehelper:
+  helperDialect: com.csii.meter.console.page.PageHelperDialect
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+
+shiro:
+  enable: true
+  inactive-time: 108000
+
+swagger:
+  enable: true

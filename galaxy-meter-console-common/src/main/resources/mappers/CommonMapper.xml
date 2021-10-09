@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.csii.meter.console.mapper.CommonMapper">
+
+    <resultMap type="com.csii.meter.console.datamodel.User" id="UserResult">
+        <result property="id"    column="id"    />
+        <result property="loginId"    column="login_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="password"    column="password"    />
+        <result property="phone"    column="phone"    />
+        <result property="email"    column="email"    />
+        <result property="adminFlag"    column="admin_flag"    />
+        <result property="enabled"    column="enabled"    />
+        <result property="loginIp"    column="login_ip"    />
+        <result property="loginDate"    column="login_date"    />
+    </resultMap>
+
+    <select id="selectUserByLoginIdAndPass" resultMap="UserResult">
+        select id, login_id, user_name, password, phone, email, enabled, admin_flag, login_ip, login_date from sys_user
+        where login_id = #{loginId} and password = #{password}
+    </select>
+
+    <update id="updateLoginInfo">
+        update sys_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="loginDate != null">login_date = #{loginDate},</if>
+            <if test="loginIp != null">login_ip = #{loginIp},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <select id="selectPermsByUserId" resultType="java.lang.String">
+            select DISTINCT m.perms from sys_user_role ur, sys_role_menu rm, sys_menu m
+        where ur.role_id = rm.role_id and rm.menu_id = m.id and ur.user_id = #{userId} AND m.perms IS NOT NULL AND m.perms != ''
+    </select>
+
+    <select id="selectCurrentUserMenuList" resultType="com.csii.meter.console.datamodel.UserMenu">
+        select menu.id,menu.menu_code,menu.perms, menu.name,menu.parent_id,menu.sort,menu.url,menu.type,menu.target,menu.perms,menu.icon,menu.component
+        from sys_menu menu where enabled=1
+            <if test="userId != null and userId != ''">
+            and id in(
+                select menu_id from  sys_role_menu where role_id in(
+                    select role_id from sys_user_role where user_id=#{userId}
+                )
+            )
+            </if>
+        order by sort asc
+    </select>
+
+    <select id="selectCurrentUserAppEnvList" resultType="com.csii.meter.console.datamodel.UserAppEnv">
+        <!-- 普通用户查询已分配的应用和环境 -->
+        <if test="userId != null and userId != ''">
+            SELECT
+                t.user_id,
+                t.app_id,
+                ai.app_code,
+                ai.name AS app_name,
+                t.env_id,
+                ei.env_code,
+                ei.name AS env_name
+              FROM sys_user_app_env t
+              LEFT JOIN app_info ai ON ai.id = t.app_id
+              LEFT JOIN app_env_info ei ON ei.id = t.env_id
+             WHERE t.user_id = #{userId}
+             ORDER BY ai.name, ei.name
+        </if>
+        <!-- 管理员查询所有应用和环境 -->
+        <if test="userId == null or userId == ''">
+            SELECT
+                ai.id AS app_id,
+                ai.app_code,
+                ai.name AS app_name,
+                ei.id AS env_id,
+                ei.env_code,
+                ei.name AS env_name
+              FROM app_info ai, app_env_info ei
+             ORDER BY ai.name, ei.name
+        </if>
+    </select>
+
+    <insert id="insertOperLog" parameterType="com.csii.meter.console.datamodel.OperLog">
+        insert into sys_oper_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="businessType != null and businessType != ''">business_type,</if>
+            <if test="operType != null">oper_type,</if>
+            <if test="method != null and method != ''">method,</if>
+            <if test="requestMethod != null and requestMethod != ''">request_method,</if>
+            <if test="operId != null and operId != ''">oper_id,</if>
+            <if test="operName != null and operName != ''">oper_name,</if>
+            <if test="operUrl != null and operUrl != ''">oper_url,</if>
+            <if test="operIp != null and operIp != ''">oper_ip,</if>
+            <if test="operParam != null">oper_param,</if>
+            <if test="jsonResult != null">json_result,</if>
+            <if test="status != null">status,</if>
+            <if test="resultCode != null and resultCode != ''">result_code,</if>
+            <if test="resultMsg != null">result_msg,</if>
+            <if test="operTime != null">oper_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="businessType != null and businessType != ''">#{businessType},</if>
+            <if test="operType != null">#{operType},</if>
+            <if test="method != null and method != ''">#{method},</if>
+            <if test="requestMethod != null and requestMethod != ''">#{requestMethod},</if>
+            <if test="operId != null and operId != ''">#{operId},</if>
+            <if test="operName != null and operName != ''">#{operName},</if>
+            <if test="operUrl != null and operUrl != ''">#{operUrl},</if>
+            <if test="operIp != null and operIp != ''">#{operIp},</if>
+            <if test="operParam != null">#{operParam},</if>
+            <if test="jsonResult != null">#{jsonResult},</if>
+            <if test="status != null">#{status},</if>
+            <if test="resultCode != null and resultCode != ''">#{resultCode},</if>
+            <if test="resultMsg != null">#{resultMsg},</if>
+            <if test="operTime != null">#{operTime},</if>
+        </trim>
+    </insert>
+    
+</mapper>

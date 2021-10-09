@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.csii.meter.console.mapper.SysRoleMapper">
+    
+    <resultMap type="com.csii.meter.console.domain.SysRole" id="RoleResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="type"    column="type"    />
+        <result property="enabled"    column="enabled"    />
+        <result property="createdBy"    column="created_by"    />
+        <result property="updatedBy"    column="updated_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectRoleVo">
+        select id, name, type, enabled, created_by, updated_by, create_time, update_time, remark from sys_role
+    </sql>
+
+    <select id="selectRoleList" parameterType="com.csii.meter.console.domain.SysRole" resultMap="RoleResult">
+        <include refid="selectRoleVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="type != null "> and type = #{type}</if>
+            <if test="enabled != null "> and enabled = #{enabled}</if>
+            <if test="createdBy != null  and createdBy != ''"> and created_by = #{createdBy}</if>
+            <if test="updatedBy != null  and updatedBy != ''"> and updated_by = #{updatedBy}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectRoleById" parameterType="String" resultMap="RoleResult">
+        <include refid="selectRoleVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectRoleListByUserId" resultMap="RoleResult">
+        <include refid="selectRoleVo"/>
+        WHERE id in (SELECT DISTINCT role_id FROM sys_user_role WHERE user_id=#{userId})
+    </select>
+
+    <insert id="insertRole" parameterType="com.csii.meter.console.domain.SysRole">
+        insert into sys_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="type != null">type,</if>
+            <if test="enabled != null">enabled,</if>
+            <if test="createdBy != null">created_by,</if>
+            <if test="updatedBy != null">updated_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="type != null">#{type},</if>
+            <if test="enabled != null">#{enabled},</if>
+            <if test="createdBy != null">#{createdBy},</if>
+            <if test="updatedBy != null">#{updatedBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <insert id="batchInsertRoleMenu" parameterType="com.csii.meter.console.domain.SysRole">
+         INSERT INTO sys_role_menu (id, role_id, menu_id, created_by, updated_by, create_time, update_time, remark) VALUES
+         <foreach collection ="list" item="rm" separator =",">
+             (#{rm.id}, #{rm.roleId}, #{rm.menuId}, #{rm.createdBy}, #{rm.updatedBy}, #{rm.createTime}, #{rm.updateTime}, #{rm.remark})
+         </foreach >
+    </insert>
+
+    <update id="updateRole" parameterType="com.csii.meter.console.domain.SysRole">
+        update sys_role
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="enabled != null">enabled = #{enabled},</if>
+            <if test="createdBy != null">created_by = #{createdBy},</if>
+            <if test="updatedBy != null">updated_by = #{updatedBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRoleById" parameterType="String">
+        delete from sys_role where id = #{id}
+    </delete>
+
+    <delete id="deleteRoleByIds" parameterType="String">
+        delete from sys_role where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteRoleMenuByRoleId">
+        delete from sys_role_menu where role_id = #{roleId}
+    </delete>
+    <!--    <delete id="removeByuserIdAndRoleId">-->
+<!--        delete from console_user_role where user_id = #{userId} and role_id in-->
+<!--        <foreach collection="list"  item="item" open="(" separator="," close=")"  >-->
+<!--            #{item}-->
+<!--        </foreach>-->
+<!--    </delete>-->
+<!--    <delete id="deleteRoleByUserId">-->
+<!--        delete from console_user_role where user_id = #{userId}-->
+<!--    </delete>-->
+
+</mapper>

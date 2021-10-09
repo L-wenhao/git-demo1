@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.csii.meter.console.mapper.SysOperLogMapper">
+    
+    <resultMap type="com.csii.meter.console.domain.SysOperLog" id="OperLogResult">
+        <result property="id"    column="id"    />
+        <result property="businessType"    column="business_type"    />
+        <result property="operType"    column="oper_type"    />
+        <result property="method"    column="method"    />
+        <result property="requestMethod"    column="request_method"    />
+        <result property="operId"    column="oper_id"    />
+        <result property="operName"    column="oper_name"    />
+        <result property="operUrl"    column="oper_url"    />
+        <result property="operIp"    column="oper_ip"    />
+        <result property="operParam"    column="oper_param"    />
+        <result property="jsonResult"    column="json_result"    />
+        <result property="status"    column="status"    />
+        <result property="resultCode"    column="result_code"    />
+        <result property="resultMsg"    column="result_msg"    />
+        <result property="operTime"    column="oper_time"    />
+    </resultMap>
+
+    <sql id="selectOperLogVo">
+        select id, business_type, oper_type, method, request_method, oper_id, oper_name, oper_url, oper_ip, oper_param, json_result, status, result_code, result_msg, oper_time from sys_oper_log
+    </sql>
+
+    <select id="selectOperLogList" parameterType="com.csii.meter.console.domain.SysOperLog" resultMap="OperLogResult">
+        <include refid="selectOperLogVo"/>
+        <where>  
+            <if test="businessType != null  and businessType != ''"> and business_type = #{businessType}</if>
+            <if test="operType != null "> and oper_type = #{operType}</if>
+            <if test="method != null  and method != ''"> and method = #{method}</if>
+            <if test="requestMethod != null  and requestMethod != ''"> and request_method = #{requestMethod}</if>
+            <if test="operId != null  and operId != ''"> and oper_id = #{operId}</if>
+            <if test="operName != null  and operName != ''"> and oper_name like concat('%', #{operName}, '%')</if>
+            <if test="operUrl != null  and operUrl != ''"> and oper_url = #{operUrl}</if>
+            <if test="operIp != null  and operIp != ''"> and oper_ip = #{operIp}</if>
+            <if test="operParam != null  and operParam != ''"> and oper_param = #{operParam}</if>
+            <if test="jsonResult != null  and jsonResult != ''"> and json_result = #{jsonResult}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="resultCode != null  and resultCode != ''"> and result_code = #{resultCode}</if>
+            <if test="resultMsg != null  and resultMsg != ''"> and result_msg = #{resultMsg}</if>
+            <if test="operTime != null "> and oper_time = #{operTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectOperLogById" parameterType="String" resultMap="OperLogResult">
+        <include refid="selectOperLogVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertOperLog" parameterType="com.csii.meter.console.domain.SysOperLog">
+        insert into sys_oper_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="businessType != null and businessType != ''">business_type,</if>
+            <if test="operType != null">oper_type,</if>
+            <if test="method != null and method != ''">method,</if>
+            <if test="requestMethod != null and requestMethod != ''">request_method,</if>
+            <if test="operId != null and operId != ''">oper_id,</if>
+            <if test="operName != null and operName != ''">oper_name,</if>
+            <if test="operUrl != null and operUrl != ''">oper_url,</if>
+            <if test="operIp != null and operIp != ''">oper_ip,</if>
+            <if test="operParam != null">oper_param,</if>
+            <if test="jsonResult != null">json_result,</if>
+            <if test="status != null">status,</if>
+            <if test="resultCode != null and resultCode != ''">result_code,</if>
+            <if test="resultMsg != null">result_msg,</if>
+            <if test="operTime != null">oper_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="businessType != null and businessType != ''">#{businessType},</if>
+            <if test="operType != null">#{operType},</if>
+            <if test="method != null and method != ''">#{method},</if>
+            <if test="requestMethod != null and requestMethod != ''">#{requestMethod},</if>
+            <if test="operId != null and operId != ''">#{operId},</if>
+            <if test="operName != null and operName != ''">#{operName},</if>
+            <if test="operUrl != null and operUrl != ''">#{operUrl},</if>
+            <if test="operIp != null and operIp != ''">#{operIp},</if>
+            <if test="operParam != null">#{operParam},</if>
+            <if test="jsonResult != null">#{jsonResult},</if>
+            <if test="status != null">#{status},</if>
+            <if test="resultCode != null and resultCode != ''">#{resultCode},</if>
+            <if test="resultMsg != null">#{resultMsg},</if>
+            <if test="operTime != null">#{operTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOperLog" parameterType="com.csii.meter.console.domain.SysOperLog">
+        update sys_oper_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="businessType != null and businessType != ''">business_type = #{businessType},</if>
+            <if test="operType != null">oper_type = #{operType},</if>
+            <if test="method != null and method != ''">method = #{method},</if>
+            <if test="requestMethod != null and requestMethod != ''">request_method = #{requestMethod},</if>
+            <if test="operId != null and operId != ''">oper_id = #{operId},</if>
+            <if test="operName != null and operName != ''">oper_name = #{operName},</if>
+            <if test="operUrl != null and operUrl != ''">oper_url = #{operUrl},</if>
+            <if test="operIp != null and operIp != ''">oper_ip = #{operIp},</if>
+            <if test="operParam != null">oper_param = #{operParam},</if>
+            <if test="jsonResult != null">json_result = #{jsonResult},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="resultCode != null and resultCode != ''">result_code = #{resultCode},</if>
+            <if test="resultMsg != null">result_msg = #{resultMsg},</if>
+            <if test="operTime != null">oper_time = #{operTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOperLogById" parameterType="String">
+        delete from sys_oper_log where id = #{id}
+    </delete>
+
+    <delete id="deleteOperLogByIds" parameterType="String">
+        delete from sys_oper_log where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

@@ -1,0 +1,46 @@
+spring:
+  redis:
+    host: 192.168.80.8
+    port: 6379
+    timeout: 5000
+    database: 3
+  aop:
+    proxy-target-class: true
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/meter?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&failOverReadOnly=false&autoReconnect=true&useSSL=false&
+      serverTimezone=Asia/Shanghai&allowMultiQueries=true
+    username: root
+    password: 123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #    url: jdbc:zenith:@192.168.100.121:1888
+    #    username: csii
+    #    password: Csii@123456
+    #    driver-class-name: com.huawei.gauss.jdbc.ZenithDriver
+    #设置连接参数，避免连接关闭异常
+    dbcp2:
+      max-idle: 5
+      min-idle: 5
+      initial-size: 5
+      max-total: 10
+      #max-wait-millis: 150
+      max-wait-millis: 10000
+      min-evictable-idle-time-millis: 3000
+    tomcat:
+      remove-abandoned: true
+      remove-abandoned-timeout: 3000
+
+  #文件大小 MB必须大写
+  #maxFileSize是单个文件大小
+  #maxRequestSize是设置总上传的数据大小
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 500MB
+      max-request-size: 1024MB
+
+elasticsearch:
+  host: 192.168.200.6
+  port: 9200
+  schema: http
+  username: elastic
+  password: 123456
